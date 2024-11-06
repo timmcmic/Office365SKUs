@@ -197,7 +197,7 @@ function get-Office365SKUHTMLData
 {
     param(
         [Parameter(Mandatory = $true)]
-        $azureCloudLocation
+        $office365CloudLocation
     )
 
     $functionHTMLData = $null
@@ -206,7 +206,7 @@ function get-Office365SKUHTMLData
 
     try {
         out-logfile -string "Invoking web request to obtain html data."
-        $functionHTMLData = invoke-webRequest -Uri $azureCloudLocation -errorAction Stop
+        $functionHTMLData = invoke-webRequest -Uri $office365CloudLocation -errorAction Stop
         out-logfile -string "Web data successfully retrieved."
     }
     catch {
@@ -225,7 +225,7 @@ function get-Office365SKUDownloadLink
 {
     param(
         [Parameter(Mandatory = $true)]
-        $azureCloudLocation
+        $office365CloudLocation
     )
 
     $functionDownloadLink = $NULL
@@ -233,7 +233,7 @@ function get-Office365SKUDownloadLink
 
     out-logfile -string "Starting get-Office365SKUDownloadLink"
 
-    $functionDownloadLink = $azureCloudLocation.links | where-object {$_.InnerText -eq $functionLinkString}
+    $functionDownloadLink = $office365CloudLocation.links | where-object {$_.InnerText -eq $functionLinkString}
 
     out-logfile -string $functionDownloadLink
 
@@ -251,10 +251,10 @@ function get-Office365SKUCSVData
 {
     param(
         [Parameter(Mandatory = $true)]
-        $azureCloudLocation
+        $office365CloudLocation
     )
 
-    $functionAzureJSONData = $NULL
+    $functionOffice365CSVData = $NULL
 
     out-logfile -string "Starting get-Office365SKUCSVData"
 
@@ -262,7 +262,7 @@ function get-Office365SKUCSVData
     {
         out-logfile -string "Invoking web request to obtain json data..."
 
-        $functionAzureJSONData = invoke-webRequest -uri $azureCloudLocation -errorAction STOP
+        $functionOffice365CSVData = invoke-webRequest -uri $office365CloudLocation -errorAction STOP
 
         out-logfile -string "Web request to obtain json data successful."
     }
@@ -276,7 +276,7 @@ function get-Office365SKUCSVData
 
     try
     {
-        $functionAzureJsonData = convertFrom-Json $functionAzureJsonData -errorAction STOP
+        $functionOffice365CSVData = ConvertFrom-CSV $functionOffice365CSVData -errorAction STOP
     }
     catch
     {
@@ -287,7 +287,7 @@ function get-Office365SKUCSVData
 
     out-logfile -string "Ending get-Office365SKUCSVData"
 
-    return $functionAzureJsonData
+    return $functionOffice365CSVData
 }
 
 #-------------------------------------------------------------------------------
@@ -297,14 +297,14 @@ function export-Office365SKUCSVData
         [Parameter(Mandatory = $true)]
         $exportLocation,
         [Parameter(Mandatory = $true)]
-        $jsonData
+        $csvData
     )
 
     out-logfile -string "Starting export-Office365SKUCSVData"
 
     try
     {
-        $jsonData | export-clixml $exportLocation
+        $csvData | export-csv -Path $exportLocation
     }
     catch
     {
