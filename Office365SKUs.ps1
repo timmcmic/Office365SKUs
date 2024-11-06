@@ -316,6 +316,38 @@ function export-Office365SKUCSVData
 }
 
 #-------------------------------------------------------------------------------
+function fix-Office365SKUCSVData
+{
+    param(
+        [Parameter(Mandatory = $true)]
+        $csvData
+    )
+
+    $functionOutputArray = @()
+
+    out-logfile -string "Starting fix-Office365SKUCSVData"
+
+    foreach ($member in $csvData)
+    {
+        out-logfile -string ("Fixing up: "+$member.service_plan_id)
+        $functionObject = new-object PSObject -property @{
+            Product_Display_Name = $member.'???Product_Display_Name'
+            String_ID = $member.String_ID
+            GUID = $member.GUID
+            Service_Plan_Name = $member.Service_Plan_Name
+            Service_Plan_ID = $member.service_plan_id
+            Service_Plans_Included_Friendly_Names = $member.Service_Plans_Included_Friendly_Names
+        }
+
+        $functionOutputArray += $functionObject
+    }
+
+    out-logfile -string "Ending fix-Office365SKUCSVData"
+
+    return $functionOutputArray
+}
+
+#-------------------------------------------------------------------------------
 
 #*******************************************************************************
 #Begin main script function
@@ -353,9 +385,13 @@ out-logfile -string "Obtaining data download link..."
 
 $office365SKUDataDownloadLink = get-Office365SKUDownloadLink -office365CloudLocation $office365SKUHTMLData
 
-out-logfile -string "Obtaining json data..."
+out-logfile -string "Obtaining csv data..."
 
 $office365CSVDataData = get-Office365SKUCSVData -office365CloudLocation $office365SKUDataDownloadLink
+
+out-logfile -string "Fixup the downloaded data to fix column headers."
+
+$office365CSVDataData = fix-Office365SKUCSVData -csvData $office365CSVDataData
 
 out-logfile -string "Export the CSV data to the logging directory."
 
