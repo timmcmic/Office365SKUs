@@ -347,15 +347,15 @@ Test-PowershellVersion
 
 out-logfile -string "Obtaining the azure html data."
 
-$office365SKUHTMLData = get-Office365SKUHTMLData -azureCloudLocation $office365SKUInformation
+$office365SKUHTMLData = get-Office365SKUHTMLData -office365CloudLocation $office365SKUInformation
 
 out-logfile -string "Obtaining data download link..."
 
-$office365SKUDataDownloadLink = get-Office365SKUDownloadLink -azureCloudLocation [string]$office365SKUHTMLData
+$office365SKUDataDownloadLink = get-Office365SKUDownloadLink -office365CloudLocation $office365SKUHTMLData
 
 out-logfile -string "Obtaining json data..."
 
-$office365CSVDataData = get-Office365SKUCSVData -azureCloudLocation $office365SKUDataDownloadLink
+$office365CSVDataData = get-Office365SKUCSVData -office365CloudLocation $office365SKUDataDownloadLink
 
 out-logfile -string "Export the CSV data to the logging directory."
 
